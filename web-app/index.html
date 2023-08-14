@@ -1,25 +1,61 @@
-<!-- In HTML Comments are written like this -->
-<!-- They can all be removed for your apps -->
-<!doctype html> <!-- This first line tells browsers to expect modern standard html 5 -->
-<html lang="en-gb"> <!-- This is indicates the page is written in British English, useful for accessibility -->
-<meta charset="utf-8"> <!-- This indicates how the file is encoded. utf-8 is standard -->
-<title>Summer Tetris</title> <!-- All pages need a title, this will be displayed in the browser's title bar -->
-<link rel="stylesheet" href="default.css"> <!-- Import style sheet – default.css -->
-<link rel="icon" href="./assets/favicon.png"> <!-- Import 'Favorites Icon' – favicon.png -->
-<script type="module" src="main.js"></script> <!-- Load the main script. Must be type="module". Have only one of these -->
+<!DOCTYPE html>
+<html lang="en-gb">
+  <head>
+    <meta charset="utf-8" />
+    <title>Summer Tetris</title>
+    <link rel="stylesheet" href="default.css" />
+    <link rel="icon" href="./assets/favicon.png" />
+    <script type="module" src="main.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1>Summer Tetris</h1>
+      <a href="../docs/Tetris.html">API Documentation</a>
+    </header>
 
-<header>
-    <h1>Summer Tetris</h1>
-    <a href="../docs/Tetris.html">API Documentation</a>
-</header>
+    <aside>
+      <div class="scoreboard-aside">
+        <h2>Scoreboard</h2>
+        <div class="score-item">
+          <span class="score-label">Current Score:</span>
 
-<aside>
-</aside>
+          <!-- To avoid scores exceeding the display area, a scrollbar effect was added -->
+          <span class="score-value currentScore">0</span>
+        </div>
+        <div class="score-item">
+          <span class="score-label">Cleared Rows:</span>
+          <span class="score-value clearedRows">0</span>
+        </div>
+        <div class="score-item">
+          <span class="score-label">Game Level:</span>
+          <span class="score-value gameLevel">0</span>
+        </div>
+        <div class="score-item">
+          <span class="score-label">Historical highest score:</span>
+          <span class="score-value maxScore">0</span>
+        </div>
+        <div class="score-item">
+          <span class="score-label">Historical highest level:</span>
+          <span class="score-value maxLevel">0</span>
+        </div>
 
-<main>
-    <div id="grid" class="grid">
+        <button class="fnBtn">suspend</button>
+      </div>
+    </aside>
+    <main>
+      <div id="grid" class="grid"></div>
+    </main>
+
+    <footer id="footer"></footer>
+
+    <div class="overlay">
+      <div class="game-over">
+        <h2>Game Over</h2>
+        <p class="gameOverLevel">Level: 0</p>
+        <p class="gameOverScore">Score: 0</p>
+        <p class="gameOverLines">Lines Cleared: 0</p>
+        <button class="restartButton">Restart</button>
+      </div>
     </div>
-</main>
-
-<footer id="footer">
-</footer>
+  </body>
+</html>

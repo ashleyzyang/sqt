@@ -1,5 +1,8 @@
-import R from "./ramda.js";
-import Score from "./Score.js";
+// Import ramda.js library
+import R from './ramda.js';
+
+// Import the points system of the game
+import Score from './Score.js';
 
 /**
  * @namespace Tetris
@@ -8,11 +11,9 @@ import Score from "./Score.js";
  */
 const Tetris = {};
 
-
 //----------------------------------------------------------------------------//
 // ## Type Definitions                                                        //
 //----------------------------------------------------------------------------//
-
 
 /**
  * A Tetris Game is all the information required to represent the current state
@@ -97,11 +98,9 @@ const Tetris = {};
  * @memberof Tetris
  */
 Tetris.I_tetromino = Object.freeze({
-    "block_type": "I",
-    "centre": [1, 0],
-    "grid": [
-        ["I", "I", "I", "I"]
-    ]
+  block_type: 'I',
+  centre: [1, 0],
+  grid: [['I', 'I', 'I', 'I']],
 });
 
 /**
@@ -114,12 +113,12 @@ Tetris.I_tetromino = Object.freeze({
  * @memberof Tetris
  */
 Tetris.J_tetromino = Object.freeze({
-    "block_type": "J",
-    "centre": [1, 0],
-    "grid": [
-        ["J", "J", "J"],
-        [" ", " ", "J"]
-    ]
+  block_type: 'J',
+  centre: [1, 0],
+  grid: [
+    ['J', 'J', 'J'],
+    [' ', ' ', 'J'],
+  ],
 });
 
 /**
@@ -132,12 +131,12 @@ Tetris.J_tetromino = Object.freeze({
  * @memberof Tetris
  */
 Tetris.L_tetromino = Object.freeze({
-    "block_type": "L",
-    "centre": [1, 0],
-    "grid": [
-        ["L", "L", "L"],
-        ["L", " ", " "]
-    ]
+  block_type: 'L',
+  centre: [1, 0],
+  grid: [
+    ['L', 'L', 'L'],
+    ['L', ' ', ' '],
+  ],
 });
 
 /**
@@ -150,12 +149,12 @@ Tetris.L_tetromino = Object.freeze({
  * @memberof Tetris
  */
 Tetris.O_tetromino = Object.freeze({
-    "block_type": "O",
-    "centre": [0.5, 0.5],
-    "grid": [
-        ["O", "O"],
-        ["O", "O"]
-    ]
+  block_type: 'O',
+  centre: [0.5, 0.5],
+  grid: [
+    ['O', 'O'],
+    ['O', 'O'],
+  ],
 });
 
 /**
@@ -168,12 +167,12 @@ Tetris.O_tetromino = Object.freeze({
  * @memberof Tetris
  */
 Tetris.S_tetromino = Object.freeze({
-    "block_type": "S",
-    "centre": [1, 0],
-    "grid": [
-        [" ", "S", "S"],
-        ["S", "S", " "]
-    ]
+  block_type: 'S',
+  centre: [1, 0],
+  grid: [
+    [' ', 'S', 'S'],
+    ['S', 'S', ' '],
+  ],
 });
 
 /**
@@ -186,12 +185,12 @@ Tetris.S_tetromino = Object.freeze({
  * @memberof Tetris
  */
 Tetris.T_tetromino = Object.freeze({
-    "block_type": "T",
-    "centre": [1, 0],
-    "grid": [
-        ["T", "T", "T"],
-        [" ", "T", " "]
-    ]
+  block_type: 'T',
+  centre: [1, 0],
+  grid: [
+    ['T', 'T', 'T'],
+    [' ', 'T', ' '],
+  ],
 });
 
 /**
@@ -204,25 +203,17 @@ Tetris.T_tetromino = Object.freeze({
  * @memberof Tetris
  */
 Tetris.Z_tetromino = Object.freeze({
-    "block_type": "Z",
-    "centre": [1, 0],
-    "grid": [
-        ["Z", "Z", " "],
-        [" ", "Z", "Z"]
-    ]
+  block_type: 'Z',
+  centre: [1, 0],
+  grid: [
+    ['Z', 'Z', ' '],
+    [' ', 'Z', 'Z'],
+  ],
 });
 
-const empty_block = " ";
+const empty_block = ' ';
 
-const all_tetrominos = [
-    Tetris.I_tetromino,
-    Tetris.J_tetromino,
-    Tetris.L_tetromino,
-    Tetris.O_tetromino,
-    Tetris.S_tetromino,
-    Tetris.T_tetromino,
-    Tetris.Z_tetromino
-];
+const all_tetrominos = [Tetris.I_tetromino, Tetris.J_tetromino, Tetris.L_tetromino, Tetris.O_tetromino, Tetris.S_tetromino, Tetris.T_tetromino, Tetris.Z_tetromino];
 
 /**
  * The height of a tetris field.
@@ -256,28 +247,43 @@ const starting_position = [Math.floor(Tetris.field_width / 2) - 1, 0];
 // ## Methods                                                                 //
 //----------------------------------------------------------------------------//
 
+/**
+ * Create a function to randomly obtain blocks and randomly select blocks from a given set of blocks
+ * @param {Array} contents - Block Set
+ * @returns {Function} - Returns a function that returns a random block and an updated set of blocks each time it is called
+ */
 const random_bag = function (contents) {
-    return function () {
-        if (contents.length === 0) {
-            return new_bag();
-        }
-        const picked_index = Math.floor(contents.length * Math.random());
-        const tetromino = contents[picked_index];
-        const new_contents = contents.filter(
-            (ignore, index) => index !== picked_index
-        );
-        return [tetromino, random_bag(new_contents)];
-    };
+  return function () {
+    if (contents.length === 0) {
+      return new_bag();
+    }
+    // Random Generation
+    const picked_index = Math.floor(contents.length * Math.random());
+    const tetromino = contents[picked_index];
+    const new_contents = contents.filter((ignore, index) => index !== picked_index);
+    return [tetromino, random_bag(new_contents)];
+  };
 };
 
+/**
+ * Create a new set of blocks using all blocks
+ */
 const new_bag = random_bag(all_tetrominos);
 
+/**
+ * Create a new row
+ * @returns {Array} - New row
+ */
 const new_line = function () {
-    return R.repeat(empty_block, Tetris.field_width);
+  return R.repeat(empty_block, Tetris.field_width);
 };
 
+/**
+ * Create a new gaming venue
+ * @returns {Array} - New gaming venue
+ */
 const new_field = function () {
-    return R.times(new_line, Tetris.field_height);
+  return R.times(new_line, Tetris.field_height);
 };
 
 /**
@@ -287,18 +293,18 @@ const new_field = function () {
  * @returns {Tetris.Game} The new game.
  */
 Tetris.new_game = function () {
-    const [current_tetromino, next_bag] = new_bag();
-    const [next_tetromino, bag] = next_bag();
+  const [current_tetromino, next_bag] = new_bag();
+  const [next_tetromino, bag] = next_bag();
 
-    return {
-        "bag": bag,
-        "current_tetromino": current_tetromino,
-        "field": new_field(),
-        "game_over": false,
-        "next_tetromino": next_tetromino,
-        "position": starting_position,
-        "score": Score.new_score()
-    };
+  return {
+    bag: bag,
+    current_tetromino: current_tetromino,
+    field: new_field(),
+    game_over: false,
+    next_tetromino: next_tetromino,
+    position: starting_position,
+    score: Score,
+  };
 };
 
 /**
@@ -313,57 +319,68 @@ Tetris.new_game = function () {
  * @returns {number[][]} The List of  coordinates `[x, y]` of each block.
  */
 Tetris.tetromino_coordiates = function (tetromino, position) {
-    return tetromino.grid.flatMap(function (row, row_index) {
-        return row.flatMap(function (block, column_index) {
-            if (block === empty_block) {
-                return [];
-            }
-            return [[
-                position[0] + column_index - Math.floor(tetromino.centre[0]),
-                position[1] + row_index - Math.floor(tetromino.centre[1])
-            ]];
-        });
+  return tetromino.grid.flatMap(function (row, row_index) {
+    return row.flatMap(function (block, column_index) {
+      if (block === empty_block) {
+        return [];
+      }
+      return [[position[0] + column_index - Math.floor(tetromino.centre[0]), position[1] + row_index - Math.floor(tetromino.centre[1])]];
     });
+  });
 };
 
+/**
+ * Check if the bottom of the block is obstructed
+ * @param {Object} tetromino - Current Block Object
+ * @param {Array} position - The position coordinates of the current block
+ * @returns {boolean} - Is the bottom of the block obstructed
+ */
 const is_blocked_bottom = function (tetromino, position) {
-    return Tetris.tetromino_coordiates(tetromino, position).some(
-        (coord) => coord[1] >= Tetris.field_height
-    );
+  return Tetris.tetromino_coordiates(tetromino, position).some(coord => coord[1] >= Tetris.field_height);
 };
 
+/**
+ * Check if the left side of the block is obstructed
+ * @param {Object} tetromino - Current Block Object
+ * @param {Array} position - The position coordinates of the current block
+ * @returns {boolean} - Is the left side of the block blocked
+ */
 const is_blocked_left = function (tetromino, position) {
-    return Tetris.tetromino_coordiates(tetromino, position).some(
-        (coord) => coord[0] < 0
-    );
+  return Tetris.tetromino_coordiates(tetromino, position).some(coord => coord[0] < 0);
 };
 
+/**
+ * Check if the right side of the block is obstructed
+ * @param {Object} tetromino - Current Block Object
+ * @param {Array} position - The position coordinates of the current block
+ * @returns {boolean} - Is the right side of the block blocked
+ */
 const is_blocked_right = function (tetromino, position) {
-    return Tetris.tetromino_coordiates(tetromino, position).some(
-        (coord) => coord[0] >= Tetris.field_width
-    );
+  return Tetris.tetromino_coordiates(tetromino, position).some(coord => coord[0] >= Tetris.field_width);
 };
 
+/**
+ * Check if the blocks are obstructed by the geometric structure of the site
+ * @param {Array} field - Current game venue
+ * @param {Object} tetromino - Current Block Object
+ * @param {Array} position - The position coordinates of the current block
+ * @returns {boolean} - Is the block obstructed by geometric structure
+ */
 const is_blocked_by_geometry = function (field, tetromino, position) {
-    return Tetris.tetromino_coordiates(tetromino, position).filter(
-        (coord) => (
-            coord[0] >= 0 &&
-            coord[0] < Tetris.field_width &&
-            coord[1] >= 0 &&
-            coord[1] < Tetris.field_height
-        )
-    ).some(
-        (coord) => field[coord[1]][coord[0]] !== empty_block
-    );
+  return Tetris.tetromino_coordiates(tetromino, position)
+    .filter(coord => coord[0] >= 0 && coord[0] < Tetris.field_width && coord[1] >= 0 && coord[1] < Tetris.field_height)
+    .some(coord => field[coord[1]][coord[0]] !== empty_block);
 };
 
+/**
+ * Check if the blocks are obstructed in any direction
+ * @param {Array} field - Current game venue
+ * @param {Object} tetromino - Current Block Object
+ * @param {Array} position - The position coordinates of the current block
+ * @returns {boolean} - Is the block blocked
+ */
 const is_blocked = function (field, tetromino, position) {
-    return (
-        is_blocked_bottom(tetromino, position) ||
-        is_blocked_left(tetromino, position) ||
-        is_blocked_right(tetromino, position) ||
-        is_blocked_by_geometry(field, tetromino, position)
-    );
+  return is_blocked_bottom(tetromino, position) || is_blocked_left(tetromino, position) || is_blocked_right(tetromino, position) || is_blocked_by_geometry(field, tetromino, position);
 };
 
 /**
@@ -376,14 +393,14 @@ const is_blocked = function (field, tetromino, position) {
  * @returns {Tetris.Game} The state after a left move is attempted.
  */
 Tetris.left = function (game) {
-    if (Tetris.is_game_over(game)) {
-        return game;
-    }
-    const new_position = [game.position[0] - 1, game.position[1]];
-    if (is_blocked(game.field, game.current_tetromino, new_position)) {
-        return game;
-    }
-    return R.mergeRight(game, {"position": new_position});
+  if (Tetris.is_game_over(game)) {
+    return game;
+  }
+  const new_position = [game.position[0] - 1, game.position[1]];
+  if (is_blocked(game.field, game.current_tetromino, new_position)) {
+    return game;
+  }
+  return R.mergeRight({ ...game, clear_lines: 0 }, { position: new_position });
 };
 
 /**
@@ -396,39 +413,54 @@ Tetris.left = function (game) {
  * @returns {Tetris.Game} The state after a right move is attempted.
  */
 Tetris.right = function (game) {
-    if (Tetris.is_game_over(game)) {
-        return game;
-    }
-    const new_position = [game.position[0] + 1, game.position[1]];
-    if (is_blocked(game.field, game.current_tetromino, new_position)) {
-        return game;
-    }
-    return R.mergeRight(game, {"position": new_position});
+  if (Tetris.is_game_over(game)) {
+    return game;
+  }
+  const new_position = [game.position[0] + 1, game.position[1]];
+  if (is_blocked(game.field, game.current_tetromino, new_position)) {
+    return game;
+  }
+  return R.mergeRight({ ...game, clear_lines: 0 }, { position: new_position });
 };
 
+/**
+ * Clockwise rotation of two-dimensional matrix
+ * @param {Array} grid - 2D matrix to be rotated
+ * @returns {Array} - Rotated two-dimensional matrix
+ */
 const rotate_grid_cw = R.pipe(R.reverse, R.transpose);
+
+/**
+ * Rotate a two-dimensional matrix counterclockwise
+ * @param {Array} grid - 2D matrix to be rotated
+ * @returns {Array} - Rotated two-dimensional matrix
+ */
 const rotate_grid_ccw = R.pipe(R.transpose, R.reverse);
 
+/**
+ * Rotate the block object clockwise
+ * @param {Object} tetromino - Current Block Object
+ * @returns {Object} - Rotated block object
+ */
 const rotate_tetromino_cw = function (tetromino) {
-    return {
-        "block_type": tetromino.block_type,
-        "centre": [
-            tetromino.grid.length - 1 - tetromino.centre[1],
-            tetromino.centre[0]
-        ],
-        "grid": rotate_grid_cw(tetromino.grid)
-    };
+  return {
+    block_type: tetromino.block_type,
+    centre: [tetromino.grid.length - 1 - tetromino.centre[1], tetromino.centre[0]],
+    grid: rotate_grid_cw(tetromino.grid),
+  };
 };
 
+/**
+ * Rotate the block object counterclockwise
+ * @param {Object} tetromino - Current Block Object
+ * @returns {Object} - Rotated block object
+ */
 const rotate_tetromino_ccw = function (tetromino) {
-    return {
-        "block_type": tetromino.block_type,
-        "centre": [
-            tetromino.centre[1],
-            tetromino.grid[0].length - 1 - tetromino.centre[0]
-        ],
-        "grid": rotate_grid_ccw(tetromino.grid)
-    };
+  return {
+    block_type: tetromino.block_type,
+    centre: [tetromino.centre[1], tetromino.grid[0].length - 1 - tetromino.centre[0]],
+    grid: rotate_grid_ccw(tetromino.grid),
+  };
 };
 
 /**
@@ -441,14 +473,14 @@ const rotate_tetromino_ccw = function (tetromino) {
  * @returns {Tetris.Game} The state after a CW rotation is attempted.
  */
 Tetris.rotate_cw = function (game) {
-    if (Tetris.is_game_over(game)) {
-        return game;
-    }
-    const new_rotation = rotate_tetromino_cw(game.current_tetromino);
-    if (is_blocked(game.field, new_rotation, game.position)) {
-        return game;
-    }
-    return R.mergeRight(game, {"current_tetromino": new_rotation});
+  if (Tetris.is_game_over(game)) {
+    return game;
+  }
+  const new_rotation = rotate_tetromino_cw(game.current_tetromino);
+  if (is_blocked(game.field, new_rotation, game.position)) {
+    return game;
+  }
+  return R.mergeRight({ ...game, clear_lines: 0 }, { current_tetromino: new_rotation });
 };
 
 /**
@@ -461,87 +493,153 @@ Tetris.rotate_cw = function (game) {
  * @returns {Tetris.Game} The state after a CCW rotation is attempted.
  */
 Tetris.rotate_ccw = function (game) {
-    if (Tetris.is_game_over(game)) {
-        return game;
-    }
-    const new_rotation = rotate_tetromino_ccw(game.current_tetromino);
-    if (is_blocked(game.field, new_rotation, game.position)) {
-        return game;
-    }
-    return R.mergeRight(game, {"current_tetromino": new_rotation});
-};
-
-const descend = function (game) {
-    const new_position = [game.position[0], game.position[1] + 1];
-    if (is_blocked(game.field, game.current_tetromino, new_position)) {
-        return game;
-    }
-    return R.mergeRight(game, {"position": new_position});
+  if (Tetris.is_game_over(game)) {
+    return game;
+  }
+  const new_rotation = rotate_tetromino_ccw(game.current_tetromino);
+  if (is_blocked(game.field, new_rotation, game.position)) {
+    return game;
+  }
+  return R.mergeRight({ ...game, clear_lines: 0 }, { current_tetromino: new_rotation });
 };
 
 /**
- * Attempt to perform a soft drop, where the piece descends one position.
- * This may accrue additional points.
- * If the piece can't be dropped, return the original state.
- * @function
- * @memberof Tetris
- * @param {Tetris.Game} game The initial state of a game.
- * @returns {Tetris.Game} The state after a soft drop is attempted.
+ * Blocks decend by one grid cell
+ * @param {Object} game - Current game status
+ * @param {number} points - Score earned
+ * @returns {Object} - Game state after descent
  */
-Tetris.soft_drop = function (game) {
-    if (Tetris.is_game_over(game)) {
-        return game;
-    }
-    return descend(game);
+const descend = function (game, points = 0) {
+  game = { ...game, clear_lines: 0 };
+  const new_position = [game.position[0], game.position[1] + 1];
+  if (is_blocked(game.field, game.current_tetromino, new_position)) {
+    return game;
+  }
+  return R.mergeRight(game, { position: new_position, score: add_points(points) });
 };
 
 /**
- * Perform a hard drop, where the piece immediatelt fully descends
- * until it hits the bottom of the field or another block.
- * This may accrue additional points.
- * A hard drop will immediately advance to the next turn.
+ * Increase points and update point display
+ * @param {number} points - Increased product score
+ * @returns {Object} - Integral object
+ */
+function add_points(points) {
+  Score.updateScore(points, true);
+  return Score;
+}
+
+/**
+ * Try to perform a soft descent, where the block moves down one grid.
+ * This may accumulate additional points.
+ * If the block cannot descend, return to its original state.
  * @function
  * @memberof Tetris
- * @param {Tetris.Game} game The initial state of a game.
- * @returns {Tetris.Game} The state after a soft drop is attempted.
+ * @param {Tetris.Game} game - The initial state of the game.
+ * @param {boolean} isPoints - Is there an additional score to avoid soft_ Drop is frequently triggeredlet score = point || localStorage.getItem('soft_drop');
+ * @param {number} points - Extra points.
+ * @returns {Tetris.Game} - The state after attempting soft descent.
  */
-Tetris.hard_drop = function (game) {
-    if (Tetris.is_game_over(game)) {
-        return game;
-    }
-    const dropped_once = descend(game);
-    if (R.equals(game, dropped_once)) {
-        return Tetris.next_turn(game);
-    }
-    return Tetris.hard_drop(dropped_once);
+Tetris.soft_drop = function (game, isPoints = false, point) {
+  // Check if the game is over
+  if (Tetris.is_game_over(game)) {
+    return game;
+  }
+
+  let score = point || localStorage.getItem('soft_drop');
+
+  if (score && !isPoints) {
+    // If there were previously saved scores, use them and delete them from local storage
+    localStorage.removeItem('soft_drop');
+  } else if (!score && !isPoints) {
+    score = 0;
+    // Otherwise, if there is no specified score, set it to 0
+  }
+
+  // Perform a soft drop operation and convert the score to a numeric type.
+  return descend(game, Number(score));
 };
 
-const lose = R.set(R.lensProp("game_over"), true);
+/**
+ * Perform a hard descent, which means that the block immediately and completely descends until it bottoms out or touches another block.
+ * This may accumulate additional points.
+ * Hard descent will immediately enter the next round.
+ * @function
+ * @memberof Tetris
+ * @param {Tetris.Game} game - The initial state of the game.
+ * @param {number} points - Extra points.
+ * @returns {Tetris.Game} - The state after attempting a hard descent.
+ */
+Tetris.hard_drop = function (game, points) {
+  // Check if the game is over
+  if (Tetris.is_game_over(game)) {
+    return game;
+  }
 
+  let score = points != undefined ? points : localStorage.getItem('hard_drop');
+
+  // If there were previously saved scores, use them and delete them from local storage
+  if (score && !points) {
+    localStorage.removeItem('hard_drop');
+  } else if (!score && !points) {
+    // Otherwise, if there is no specified score, set it to 0
+    score = 0;
+  }
+
+  // Perform a soft descent operation and convert the score to a numeric type
+  const dropped_once = descend(game, Number(score));
+  if (R.equals(game, dropped_once)) {
+    // If the block cannot descend, immediately enter the next round
+    return Tetris.next_turn(game);
+  }
+  // Continue hard descent until the block cannot descend again
+  return Tetris.hard_drop(dropped_once, 0);
+};
+
+/**
+ * Game failed
+ * @param {Object} game - Current game status
+ * @returns {Object} - Game status after failure
+ */
+const lose = R.set(R.lensProp('game_over'), true);
+
+/**
+ * Lock blocks to the game field
+ * @param {Object} game - Current game status
+ * @returns {Array} - Updated gaming venue
+ */
 const lock = function (game) {
-    const updated_field = R.clone(game.field);
-    const coords = Tetris.tetromino_coordiates(
-        game.current_tetromino,
-        game.position
-    );
-    coords.forEach(function (coord) {
-        updated_field[coord[1]][coord[0]] = game.current_tetromino.block_type;
-    });
-    return updated_field;
+  const updated_field = R.clone(game.field);
+  const coords = Tetris.tetromino_coordiates(game.current_tetromino, game.position);
+  coords.forEach(function (coord) {
+    updated_field[coord[1]][coord[0]] = game.current_tetromino.block_type;
+  });
+  return updated_field;
 };
 
-const is_complete_line = (line) => !line.some((block) => block === empty_block);
+/**
+ * Check if a line is complete
+ * @param {Array} line - Lines to be checked
+ * @returns {boolean} - Is the line complete
+ */
+const is_complete_line = line => !line.some(block => block === empty_block);
 
+/**
+ * Fill in the game field and fill in the missing rows
+ * @param {Array} short_field - Incomplete gaming venue
+ * @returns {Array} - Completed game venue
+ */
 const pad_field = function (short_field) {
-    const missing_row_count = Tetris.field_height - short_field.length;
-    const new_rows = R.times(new_line, missing_row_count);
-    return [...new_rows, ...short_field];
+  const missing_row_count = Tetris.field_height - short_field.length;
+  const new_rows = R.times(new_line, missing_row_count);
+  return [...new_rows, ...short_field];
 };
 
-const clear_lines = R.pipe(
-    R.reject(is_complete_line),
-    pad_field
-);
+/**
+ * Clear the complete rows and make up for the missing rows in the field
+ * @param {Array} field - Current game venue
+ * @returns {Array} - Updated gaming venue
+ */
+const clear_lines = R.pipe(R.reject(is_complete_line), pad_field);
 
 /**
  * next_turn advances the Tetris game.
@@ -555,47 +653,51 @@ const clear_lines = R.pipe(
  * @param {Tetris.Game} game
  * @returns {Tetris.Game}
  */
-Tetris.next_turn = function (game) {
-    console.log(game);
+Tetris.next_turn = function (game, type) {
+  if (game.game_over) {
+    return game;
+  }
 
-    if (game.game_over) {
-        return game;
-    }
+  // If the current piece can descend, do that.
+  const descended = descend({ ...game, clear_lines: 0 });
+  if (!R.equals(game, descended)) {
+    return descended;
+  }
 
-    // If the current piece can descend, do that.
-    const descended = descend(game);
-    if (!R.equals(game, descended)) {
-        return descended;
-    }
+  // Is the current piece on top of a locked in piece?
+  // I.e. it's just been deployed and something is in the way.
+  // In this case, lose the game.
+  if (is_blocked_by_geometry(game.field, game.current_tetromino, game.position)) {
+    return lose(game);
+  }
 
-    // Is the current piece on top of a locked in piece?
-    // I.e. it's just been deployed and something is in the way.
-    // In this case, lose the game.
-    if (is_blocked_by_geometry(
-        game.field,
-        game.current_tetromino,
-        game.position
-    )) {
-        return lose(game);
-    }
+  // Otherwise, we can't descend and we've not lost,
+  // So lock the current piece in place and deploy the next.
+  let locked_field = lock(game);
 
-    // Otherwise, we can't descend and we've not lost,
-    // So lock the current piece in place and deploy the next.
-    const locked_field = lock(game);
+  const cleared_field = clear_lines(locked_field);
 
-    const cleared_field = clear_lines(locked_field);
+  const [next_tetromino, bag] = game.bag();
 
-    const [next_tetromino, bag] = game.bag();
+  let clearLines = locked_field.filter(parItem => parItem.every(childItem => childItem !== ' ')).length;
 
-    return {
-        "bag": bag,
-        "current_tetromino": game.next_tetromino,
-        "field": cleared_field,
-        "game_over": false,
-        "next_tetromino": next_tetromino,
-        "position": starting_position,
-        "score": game.score
-    };
+  // console.log(clearLines, 'clearLines');
+
+  if (locked_field.filter(parItem => parItem.every(childItem => childItem !== ' ')).length) {
+    Score.updateClearLines(clearLines);
+  }
+
+  return {
+    bag: bag,
+    current_tetromino: game.next_tetromino,
+    field: cleared_field,
+    // 清除的行数
+    clear_lines: clearLines,
+    game_over: false,
+    next_tetromino: next_tetromino,
+    position: starting_position,
+    score: Score,
+  };
 };
 
 /**
@@ -605,7 +707,7 @@ Tetris.next_turn = function (game) {
  * @returns {boolean} Whether the game is over or not.
  */
 Tetris.is_game_over = function (game) {
-    return game.game_over;
+  return game.game_over;
 };
 
 export default Object.freeze(Tetris);
