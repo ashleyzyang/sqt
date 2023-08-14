@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>JSDoc: Source: main.js</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css" />
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css" />
+  </head>
+
+  <body>
+    <div id="main">
+      <h1 class="page-title">Source: main.js</h1>
+
+      <section>
+        <article>
+          <pre class="prettyprint source linenums"><code>// Import ramda.js library
+import R from './ramda.js';
+
+// Import game instances and data
+import Tetris from './Tetris.js';
+
+// Import the points system of the game
+import Score from './Score.js';
+
+// Initialize the number of rows and columns in the game
+const grid_columns = Tetris.field_width;
+const grid_rows = Tetris.field_height;
+
+// Create game instances
+let game = Tetris.new_game();
+
+// Set CSS variables to dynamically update the number of rows and columns in the page
+document.documentElement.style.setProperty('--grid-rows', grid_rows);
+document.documentElement.style.setProperty('--grid-columns', grid_columns);
+
+// Get Game Panel
+const grid = document.getElementById('grid');
+
+// Pause identification
+let flag = true;
+
+// Dom elements in the scoreboard
+const scoreboardDoms = {
+  currentScore: document.querySelector('.currentScore'),
+  clearedRows: document.querySelector('.clearedRows'),
+  gameLevel: document.querySelector('.gameLevel'),
+  maxScore: document.querySelector('.maxScore'),
+  maxLevel: document.querySelector('.maxLevel'),
+};
+
+// Panel at the end of the game
+const gameOverPanelDoms = {
+  overlay: document.querySelector('.overlay'),
+  gameOverLevel: document.querySelector('.gameOverLevel'),
+  gameOverScore: document.querySelector('.gameOverScore'),
+  gameOverLines: document.querySelector('.gameOverLines'),
+  restartButton: document.querySelector('.restartButton'),
+};
+
+// Add pause/resume function
+const fnBtn = document.querySelector('.fnBtn');
+fnBtn.addEventListener('click', () => {
+  flag = !flag;
+  fnBtn.textContent = flag ? 'suspend' : 'continue';
+});
+
+// Update the corresponding Tetris to the panel
+const cells = R.range(0, grid_rows).map(function () {
+  const row = document.createElement('div');
+  row.className = 'row';
+
+  const rows = R.range(0, grid_columns).map(function () {
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+
+    row.append(cell);
+
+    return cell;
+  });
+
+  grid.append(row);
+  return rows;
+});
+
+// Update Grid
+const update_grid = function () {
+  // Pop up the end panel when the game ends
+  if (game.game_over) {
+    // Fill in score data
+    gameOverPanelDoms.gameOverLevel.textContent = `Level: ${Score.level()}`;
+    gameOverPanelDoms.gameOverScore.textContent = `Score: ${Score.score}`;
+    gameOverPanelDoms.gameOverLines.textContent = `Lines Cleared: ${Score.lines_cleared}`;
+    gameOverPanelDoms.overlay.style.display = 'flex';
+
+    // Restart the game
+    gameOverPanelDoms.restartButton.addEventListener('click', () => {
+      gameOverPanelDoms.overlay.style.display = 'none';
+
+      // Reset Game
+      game = Tetris.new_game();
+
+      // Reset Score
+      Score.reset(Score);
+    });
+  }
+
+  // First, display the mesh of the locked block
+  game.field.forEach(function (line, line_index) {
+    line.forEach(function (block, column_index) {
+      const cell = cells[line_index][column_index];
+      cell.className = `cell ${block}`;
+    });
+  });
+
+  // Show Ghost Tetris
+  const ghost_game = R.reduce(Tetris.soft_drop, game, R.range(0, 22));
+  Tetris.tetromino_coordiates(ghost_game.current_tetromino, ghost_game.position).forEach(function (coord) {
+    try {
+      const cell = cells[coord[1]][coord[0]];
+      cell.className = `cell ghost ${ghost_game.current_tetromino.block_type}`;
+    } catch (ignore) {}
+  });
+
+  // Display currently declining Tetris
+  Tetris.tetromino_coordiates(game.current_tetromino, game.position).forEach(function (coord) {
+    try {
+      const cell = cells[coord[1]][coord[0]];
+      cell.className = `cell current ${game.current_tetromino.block_type}`;
+    } catch (ignore) {}
+  });
+
+  // Update score, level, and number of cleared rows information
+  update_scoreboard(Score);
+};
+
+/**
+ * Update score, level, and number of cleared rows information
+ * @param {Score} Score Scoring System Objects
+ */
+function update_scoreboard(Score) {
+  // Obtain the highest score in history, if not, default to 0
+  let maxScore = localStorage.getItem('maxScore') || 0;
+  let maxLevel = localStorage.getItem('maxLevel') || 0;
+  scoreboardDoms.currentScore.textContent = Score.score;
+  scoreboardDoms.clearedRows.textContent = Score.lines_cleared;
+  scoreboardDoms.gameLevel.textContent = Score.level();
+
+  // Historical highest score
+  if (Score.score > maxScore) {
+    scoreboardDoms.maxScore.textContent = Score.score;
+    localStorage.setItem('maxScore', Score.score);
+  } else {
+    scoreboardDoms.maxScore.textContent = maxScore;
+  }
+
+  // Historical highest level
+  if (Score.level > maxLevel) {
+    scoreboardDoms.maxLevel.textContent = Score.level();
+    localStorage.setItem('maxLevel', Score.level());
+  } else {
+    scoreboardDoms.maxLevel.textContent = maxLevel;
+  }
+}
+
+// Do not let the player hold down the rotation key.
+let key_locked = false;
+
+// Trigger when the user raises the keyboard
+document.body.onkeyup = function () {
+  key_locked = false;
+};
+
+// Triggered by the user pressing the keyboard, different functions are executed based on the different keys pressed
+document.body.onkeydown = function (event) {
+  if (!key_locked &amp;&amp; event.key === 'ArrowUp') {
+    key_locked = true;
+    game = Tetris.rotate_ccw(game);
+  }
+  if (event.key === 'ArrowDown') {
+    game = Tetris.soft_drop(game);
+    localStorage.setItem('soft_drop', 1);
+  }
+  if (event.key === 'ArrowLeft') {
+    game = Tetris.left(game);
+  }
+  if (event.key === 'ArrowRight') {
+    game = Tetris.right(game);
+  }
+  if (event.key === ' ') {
+    game = Tetris.hard_drop(game);
+    localStorage.setItem('hard_drop', 2);
+  }
+
+  // Update Grid
+  update_grid();
+};
+
+// Update Grid
+const timer_function = function () {
+  if (flag) {
+    // Update game status
+    game = Tetris.next_turn(game);
+    // Update the display of the game area
+    update_grid();
+  }
+
+  // Refresh every 500 milliseconds, where 500 milliseconds is the initial value and will be modified based on the game level. The specific formula is 2500/(level+4)
+  setTimeout(timer_function, 2500 / (Score.level() + 4));
+};
+
+// Start the game for the first time. It has only been called once.
+// Starting from here, call the timer above_ Function.
+setTimeout(timer_function, 500);
+
+// Update Grid
+update_grid();
+</code></pre>
+        </article>
+      </section>
+    </div>
+
+    <nav>
+      <h2><a href="index.html">Home</a></h2>
+      <h3>Namespaces</h3>
+      <ul>
+        <li><a href="Score.html">Score</a></li>
+        <li><a href="Tetris.html">Tetris</a></li>
+      </ul>
+      <h3>Global</h3>
+      <ul>
+        <li><a href="global.html#add_points">add_points</a></li>
+        <li><a href="global.html#clear_lines">clear_lines</a></li>
+        <li><a href="global.html#cleared_lines">cleared_lines</a></li>
+        <li><a href="global.html#descend">descend</a></li>
+        <li><a href="global.html#is_blocked">is_blocked</a></li>
+        <li><a href="global.html#is_blocked_bottom">is_blocked_bottom</a></li>
+        <li><a href="global.html#is_blocked_by_geometry">is_blocked_by_geometry</a></li>
+        <li><a href="global.html#is_blocked_left">is_blocked_left</a></li>
+        <li><a href="global.html#is_blocked_right">is_blocked_right</a></li>
+        <li><a href="global.html#is_complete_line">is_complete_line</a></li>
+        <li><a href="global.html#judgmentScore">judgmentScore</a></li>
+        <li><a href="global.html#lock">lock</a></li>
+        <li><a href="global.html#lose">lose</a></li>
+        <li><a href="global.html#new_bag">new_bag</a></li>
+        <li><a href="global.html#new_field">new_field</a></li>
+        <li><a href="global.html#new_line">new_line</a></li>
+        <li><a href="global.html#pad_field">pad_field</a></li>
+        <li><a href="global.html#random_bag">random_bag</a></li>
+        <li><a href="global.html#rotate_grid_ccw">rotate_grid_ccw</a></li>
+        <li><a href="global.html#rotate_grid_cw">rotate_grid_cw</a></li>
+        <li><a href="global.html#rotate_tetromino_ccw">rotate_tetromino_ccw</a></li>
+        <li><a href="global.html#rotate_tetromino_cw">rotate_tetromino_cw</a></li>
+        <li><a href="global.html#update_scoreboard">update_scoreboard</a></li>
+      </ul>
+    </nav>
+
+    <br class="clear" />
+
+    <footer>
+      Documentation generated by
+      <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a>
+      on Sun Aug 06 2023 14:38:33 GMT+0800 (GMT+08:00)
+    </footer>
+
+    <script>
+      prettyPrint();
+    </script>
+    <script src="scripts/linenumber.js"></script>
+  </body>
+</html>

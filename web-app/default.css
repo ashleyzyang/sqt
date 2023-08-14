@@ -213,7 +213,7 @@ footer {
   overflow-x: auto;
 }
 
-/* 设置滚动条样式 */
+/* Set the scroll bar style */
 .score-value::-webkit-scrollbar {
   height: 5px;
 }
@@ -231,7 +231,7 @@ footer {
   background-color: #555; /* Set the color of the scroll bar slider when hovering the mouse */
 }
 
-/* 继续暂停按钮样式 */
+/* Continue the pause button style */
 .fnBtn {
   position: absolute;
   left: 50%;

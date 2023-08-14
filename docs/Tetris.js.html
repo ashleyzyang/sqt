@@ -1,4 +1,32 @@
-// Import ramda.js library
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Tetris.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Tetris.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// Import ramda.js library
 import R from './ramda.js';
 
 // Import the points system of the game
@@ -80,7 +108,7 @@ const Tetris = {};
  * The bag is an abstraction, there need not be a well defined contents.
  * @typedef {function} Tetromino_bag
  * @memberof Tetris
- * @returns {array<(Tetris.Tetromino | Tetris.Tetromino_bag)>}
+ * @returns {array&lt;(Tetris.Tetromino | Tetris.Tetromino_bag)>}
  * @example
  * const [next_piece, next_bag] = bag();
  */
@@ -91,9 +119,9 @@ const Tetris = {};
 
 /**
  * I Tetromino
- * <pre>
+ * &lt;pre>
  * 🟫🟫🟫🟫
- * </pre>
+ * &lt;/pre>
  * @constant {Tetris.Tetromino}
  * @memberof Tetris
  */
@@ -105,10 +133,10 @@ Tetris.I_tetromino = Object.freeze({
 
 /**
  * J Tetromino
- * <pre>
+ * &lt;pre>
  * 🟧⬛⬛
  * 🟧🟧🟧
- * </pre>
+ * &lt;/pre>
  * @constant {Tetris.Tetromino}
  * @memberof Tetris
  */
@@ -123,10 +151,10 @@ Tetris.J_tetromino = Object.freeze({
 
 /**
  * L Tetromino
- * <pre>
+ * &lt;pre>
  * 🟦🟦🟦
  * 🟦⬛⬛
- * </pre>
+ * &lt;/pre>
  * @constant {Tetris.Tetromino}
  * @memberof Tetris
  */
@@ -141,10 +169,10 @@ Tetris.L_tetromino = Object.freeze({
 
 /**
  * O Tetromino
- * <pre>
+ * &lt;pre>
  * 🟨🟨
  * 🟨🟨
- * </pre>
+ * &lt;/pre>
  * @constant {Tetris.Tetromino}
  * @memberof Tetris
  */
@@ -159,10 +187,10 @@ Tetris.O_tetromino = Object.freeze({
 
 /**
  * S Tetromino
- * <pre>
+ * &lt;pre>
  * ⬛🟩🟩
  * 🟩🟩⬛
- * </pre>
+ * &lt;/pre>
  * @constant {Tetris.Tetromino}
  * @memberof Tetris
  */
@@ -177,10 +205,10 @@ Tetris.S_tetromino = Object.freeze({
 
 /**
  * T Tetromino
- * <pre>
+ * &lt;pre>
  * ⬛🟪⬛
  * 🟪🟪🟪
- * </pre>
+ * &lt;/pre>
  * @constant {Tetris.Tetromino}
  * @memberof Tetris
  */
@@ -195,10 +223,10 @@ Tetris.T_tetromino = Object.freeze({
 
 /**
  * Z Tetromino
- * <pre>
+ * &lt;pre>
  * 🟥🟥⬛
  * ⬛🟥🟥
- * </pre>
+ * &lt;/pre>
  * @constant {Tetris.Tetromino}
  * @memberof Tetris
  */
@@ -346,11 +374,11 @@ const is_blocked_bottom = function (tetromino, position) {
  * @returns {boolean} - Is the left side of the block blocked
  */
 const is_blocked_left = function (tetromino, position) {
-  return Tetris.tetromino_coordiates(tetromino, position).some(coord => coord[0] < 0);
+  return Tetris.tetromino_coordiates(tetromino, position).some(coord => coord[0] &lt; 0);
 };
 
 /**
- * Check if the right side of the block is obstructed
+ * 检查方块是否右侧受阻
  * @param {Object} tetromino - Current Block Object
  * @param {Array} position - The position coordinates of the current block
  * @returns {boolean} - Is the right side of the block blocked
@@ -368,7 +396,7 @@ const is_blocked_right = function (tetromino, position) {
  */
 const is_blocked_by_geometry = function (field, tetromino, position) {
   return Tetris.tetromino_coordiates(tetromino, position)
-    .filter(coord => coord[0] >= 0 && coord[0] < Tetris.field_width && coord[1] >= 0 && coord[1] < Tetris.field_height)
+    .filter(coord => coord[0] >= 0 &amp;&amp; coord[0] &lt; Tetris.field_width &amp;&amp; coord[1] >= 0 &amp;&amp; coord[1] &lt; Tetris.field_height)
     .some(coord => field[coord[1]][coord[0]] !== empty_block);
 };
 
@@ -504,7 +532,7 @@ Tetris.rotate_ccw = function (game) {
 };
 
 /**
- * Blocks decend by one grid cell
+ * 方块下降一格
  * @param {Object} game - Current game status
  * @param {number} points - Score earned
  * @returns {Object} - Game state after descent
@@ -547,15 +575,15 @@ Tetris.soft_drop = function (game, isPoints = false, point) {
 
   let score = point || localStorage.getItem('soft_drop');
 
-  if (score && !isPoints) {
+  if (score &amp;&amp; !isPoints) {
     // If there were previously saved scores, use them and delete them from local storage
     localStorage.removeItem('soft_drop');
-  } else if (!score && !isPoints) {
+  } else if (!score &amp;&amp; !isPoints) {
     score = 0;
     // Otherwise, if there is no specified score, set it to 0
   }
 
-  // Perform a soft drop operation and convert the score to a numeric type.
+  // 进行软降操作，并将分数转换为数字类型
   return descend(game, Number(score));
 };
 
@@ -578,9 +606,9 @@ Tetris.hard_drop = function (game, points) {
   let score = points != undefined ? points : localStorage.getItem('hard_drop');
 
   // If there were previously saved scores, use them and delete them from local storage
-  if (score && !points) {
+  if (score &amp;&amp; !points) {
     localStorage.removeItem('hard_drop');
-  } else if (!score && !points) {
+  } else if (!score &amp;&amp; !points) {
     // Otherwise, if there is no specified score, set it to 0
     score = 0;
   }
@@ -691,7 +719,7 @@ Tetris.next_turn = function (game, type) {
     bag: bag,
     current_tetromino: game.next_tetromino,
     field: cleared_field,
-    // The number of rows cleared
+    // 清除的行数
     clear_lines: clearLines,
     game_over: false,
     next_tetromino: next_tetromino,
@@ -711,3 +739,26 @@ Tetris.is_game_over = function (game) {
 };
 
 export default Object.freeze(Tetris);
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="Score.html">Score</a></li><li><a href="Tetris.html">Tetris</a></li></ul><h3>Global</h3><ul><li><a href="global.html#add_points">add_points</a></li><li><a href="global.html#clear_lines">clear_lines</a></li><li><a href="global.html#cleared_lines">cleared_lines</a></li><li><a href="global.html#descend">descend</a></li><li><a href="global.html#is_blocked">is_blocked</a></li><li><a href="global.html#is_blocked_bottom">is_blocked_bottom</a></li><li><a href="global.html#is_blocked_by_geometry">is_blocked_by_geometry</a></li><li><a href="global.html#is_blocked_left">is_blocked_left</a></li><li><a href="global.html#is_blocked_right">is_blocked_right</a></li><li><a href="global.html#is_complete_line">is_complete_line</a></li><li><a href="global.html#judgmentScore">judgmentScore</a></li><li><a href="global.html#lock">lock</a></li><li><a href="global.html#lose">lose</a></li><li><a href="global.html#new_bag">new_bag</a></li><li><a href="global.html#new_field">new_field</a></li><li><a href="global.html#new_line">new_line</a></li><li><a href="global.html#pad_field">pad_field</a></li><li><a href="global.html#random_bag">random_bag</a></li><li><a href="global.html#rotate_grid_ccw">rotate_grid_ccw</a></li><li><a href="global.html#rotate_grid_cw">rotate_grid_cw</a></li><li><a href="global.html#rotate_tetromino_ccw">rotate_tetromino_ccw</a></li><li><a href="global.html#rotate_tetromino_cw">rotate_tetromino_cw</a></li><li><a href="global.html#update_scoreboard">update_scoreboard</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Sun Aug 06 2023 14:38:33 GMT+0800 (GMT+08:00)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
